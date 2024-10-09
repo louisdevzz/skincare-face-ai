@@ -5,6 +5,9 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Camera, RefreshCw, Droplet, Zap, Leaf } from 'lucide-react'
+//import RadarChart from './RadarChart';
+import RadarChart from 'react-svg-radar-chart';
+import 'react-svg-radar-chart/build/css/index.css'
 
 export default function FaceScanAnalysisComponent() {
   const [isScanning, setIsScanning] = useState(false)
@@ -71,106 +74,111 @@ export default function FaceScanAnalysisComponent() {
     </div>
   )
 
+  const data = [
+    {
+      data: {
+        skinHealth: 0.8,
+        firmness: 0.7,
+        oiliness: 0.6,
+        moisture: 0.9,
+        redness: 0.5,
+        acne: 0.4,
+        wrinkles: 0.3,
+        tearTrough: 0.6,
+        droopyLowerEyelid: 0.5,
+        droopyUpperEyelid: 0.4,
+        pores: 0.7,
+        darkCircles: 0.6,
+        texture: 0.8,
+        spots: 0.5,
+        radiance: 0.9,
+        eyeBags: 0.4
+      },
+      meta: { color: 'blue' }
+    }
+  ];
+
+  const captions = {
+    skinHealth: 'Skin Health 20%',
+    firmness: 'Firmness',
+    oiliness: 'Oiliness',
+    moisture: 'Moisture',
+    redness: 'Redness',
+    acne: 'Acne',
+    wrinkles: 'Wrinkles',
+    tearTrough: 'Tear Trough',
+    droopyLowerEyelid: 'Droopy Lower Eyelid',
+    droopyUpperEyelid: 'Droopy Upper Eyelid',
+    pores: 'Pores',
+    darkCircles: 'Dark Circles',
+    texture: 'Texture',
+    spots: 'Spots',
+    radiance: 'Radiance',
+    eyeBags: 'Eye Bags'
+  };
+
+
   return (
-    <Card className="w-full max-w-4xl mx-auto overflow-hidden">
-      <CardHeader>
-        <CardTitle>Face Scan Analysis</CardTitle>
-      </CardHeader>
-      <CardContent className="p-0">
-        <div className="grid md:grid-cols-2 gap-4">
-          <div className="relative">
-            {isScanning ? (
-              <>
-                <video 
-                  ref={videoRef} 
-                  autoPlay 
-                  playsInline 
-                  className="w-full h-[400px] object-cover"
-                />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-48 h-64 border-4 border-dashed border-white rounded-full opacity-50" />
-                </div>
-                <p className="absolute bottom-4 left-0 right-0 text-center text-white text-lg font-semibold">
-                  Place your face inside the circle for a better result
-                </p>
-              </>
-            ) : capturedImage ? (
-              <img src={capturedImage} alt="Captured face" className="w-full h-[400px] object-cover" />
-            ) : (
-              <div className="w-full h-[400px] bg-gray-200 flex items-center justify-center">
-                <p className="text-gray-500 text-lg">Start scanning to capture your face</p>
+    <div className='flex flex-row items-center justify-center w-full h-screen'>
+      <div className='flex flex-row overflow-hidden gap-40'>
+        {isScanning && (
+            <video ref={videoRef} autoPlay className='border border-gray-200 h-[600px] w-[400px] p-4 object-cover'></video>
+        )}
+        {
+          !isScanning && (
+            <div className='border border-gray-400 rounded-md h-[600px] w-[400px] p-4 flex flex-col items-center gap-4'>
+              <div className='flex flex-col items-center mt-10'>
+                <h2 className='text-lg'>Get Ready to Start Skin Analysis</h2>
+                <h3 className='text-xl font-semibold'>INSTRUCTIONS</h3>
               </div>
-            )}
-            <canvas ref={canvasRef} style={{ display: 'none' }} width="640" height="480" />
+              <ul className='list-none'>
+                <li className='flex items-center mb-2 border border-gray-300 p-2 rounded-md text-sm gap-2'>
+                  <span className='text-4xl'>👓</span>
+                  <span className='ml-2'>Take off your glasses and make sure bangs are not covering your forehead</span>
+                </li>
+                <li className='flex items-center mb-2 text-sm gap-2 border border-gray-300 p-2 rounded-md'>
+                  <span className='text-4xl'>💡</span>
+                  <span className='ml-2'>Make sure that you&#39;re in a well-lit environment</span>
+                </li>
+                <li className='flex items-center mb-2 text-sm gap-2 border border-gray-300 p-2 rounded-md'>
+                  <span className='text-4xl'>💄</span>
+                  <span className='ml-2'>Remove makeup to get more accurate results</span>
+                </li>
+                <li className='flex items-center mb-2 text-sm gap-2 border border-gray-300 p-2 rounded-md'>
+                  <span className='text-4xl'>📷</span>
+                  <span className='ml-2'>Look straight into the camera and keep your face in the circle</span>
+                </li>
+              </ul>
+              <Button onClick={() => setIsScanning(true)} className='mt-4 w-full'>
+                GET STARTED
+              </Button>
+            </div>
+          )
+        }
+        <div className='flex flex-col items-center h-[600px] w-[500px] gap-2'>
+          <div className='flex flex-col items-center'>
+            <h2 className='text-2xl font-bold'>YOUR SKIN REPORT</h2>
+            <h3 className='text-2xl font-semibold'>Skin Health Matrix</h3>
           </div>
-          <div className="p-4">
-            {analysisComplete ? (
-              <>
-                <h3 className="text-lg font-semibold mb-4">Skin Analysis Results</h3>
-                <AnalysisBar label="Acne" value={20} color="bg-red-500" />
-                <AnalysisBar label="Texture" value={60} color="bg-green-500" />
-                <AnalysisBar label="Hydration" value={80} color="bg-blue-500" />
-                <AnalysisBar label="Irritation" value={10} color="bg-yellow-500" />
-                <Tabs defaultValue="morning" className="mt-6">
-                  <TabsList>
-                    <TabsTrigger value="morning">Morning</TabsTrigger>
-                    <TabsTrigger value="evening">Evening</TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="morning">
-                    <div className="space-y-4">
-                      <div className="flex items-center space-x-3">
-                        <Droplet className="h-6 w-6 text-blue-500" />
-                        <div>
-                          <h4 className="font-semibold">Cleanser</h4>
-                          <p className="text-sm text-gray-600">Gentle Skin Facial Salicylic Acid Cleanser</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <Zap className="h-6 w-6 text-purple-500" />
-                        <div>
-                          <h4 className="font-semibold">Serum</h4>
-                          <p className="text-sm text-gray-600">Niacinamide 10% Zinc 1% Oil Control Serum</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <Leaf className="h-6 w-6 text-green-500" />
-                        <div>
-                          <h4 className="font-semibold">Moisturizer</h4>
-                          <p className="text-sm text-gray-600">Ultra Facial Oil-Free Gel Cream</p>
-                        </div>
-                      </div>
-                    </div>
-                  </TabsContent>
-                  <TabsContent value="evening">
-                    <p>Evening routine recommendations will be provided soon.</p>
-                  </TabsContent>
-                </Tabs>
-              </>
-            ) : (
-              <div className="h-full flex items-center justify-center">
-                <p className="text-gray-500 text-lg">Scan your face to see analysis results</p>
-              </div>
-            )}
+          <div className='w-full h-full flex flex-col items-center justify-center'>
+            <div className="w-full h-full flex flex-col items-center justify-center">
+              <h4 className="font-semibold mb-4">Skin Health Matrix</h4>
+              
+              <RadarChart
+                captions={captions}
+                data={data}
+                size={400}
+                options={{
+                  scales: 5, // Number of concentric circles
+                  zoomDistance: 1.2,
+                  axes: true, // Show axes                
+                }}
+              />
+            </div>
           </div>
         </div>
-      </CardContent>
-      <CardFooter className="flex justify-between p-4 bg-gray-100">
-        {!isScanning && !capturedImage && (
-          <Button onClick={() => setIsScanning(true)} className="w-full">
-            <Camera className="mr-2 h-4 w-4" /> Start Scan
-          </Button>
-        )}
-        {isScanning && (
-          <Button onClick={captureImage} className="w-full">
-            <Camera className="mr-2 h-4 w-4" /> Capture
-          </Button>
-        )}
-        {capturedImage && (
-          <Button onClick={resetScan} className="w-full">
-            <RefreshCw className="mr-2 h-4 w-4" /> Rescan
-          </Button>
-        )}
-      </CardFooter>
-    </Card>
+      </div>
+      <canvas ref={canvasRef} className='hidden'></canvas>
+    </div>
   )
 }
